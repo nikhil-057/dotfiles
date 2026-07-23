@@ -11,9 +11,22 @@ vim.opt_local.smarttab = true
 vim.opt_local.expandtab = true
 vim.opt_local.tabstop = 8
 vim.opt_local.softtabstop = 0
--- vim.lsp.set_log_level("debug")
 
--- remove \r after pasting from clipboard
+-- Use nc + socat listeners to bridge neovim clipboard to macos clipboard
+vim.g.clipboard = {
+  name = "macos_clipboard_bridge",
+  copy = {
+    ["+"] = "nc -N host.docker.internal 8377",
+    ["*"] = "nc -N host.docker.internal 8377",
+  },
+  paste = {
+    ["+"] = "nc -N host.docker.internal 8388",
+    ["*"] = "nc -N host.docker.internal 8388",
+  },
+  cache_enabled = 0,
+}
+
+-- Remove \r after pasting from clipboard
 -- https://neovim.io/doc/user/api.html#nvim_set_keymap()
 vim.api.nvim_set_keymap("n", "\"+p", ("\"+p<cmd>%s/\\r//g<cr>"), {})
 vim.api.nvim_set_keymap("n", "\"+P", ("\"+P<cmd>%s/\\r//g<cr>"), {})
